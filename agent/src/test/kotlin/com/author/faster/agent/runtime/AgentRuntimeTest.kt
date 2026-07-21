@@ -2,6 +2,7 @@ package com.author.faster.agent.runtime
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.put
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -106,7 +107,7 @@ class AgentRuntimeTest {
         val definition = writeDefinition.copy(
             inputSchema = buildJsonObject {
                 put("type", "object")
-                put("required", kotlinx.serialization.json.buildJsonArray { add("name") })
+                put("required", kotlinx.serialization.json.buildJsonArray { add(JsonPrimitive("name")) })
             },
         )
         var requestCount = 0
