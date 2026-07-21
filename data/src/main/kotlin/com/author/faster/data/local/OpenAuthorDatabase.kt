@@ -14,8 +14,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         PendingToolCallEntity::class,
         WorldCategoryEntity::class,
         WorldEntryEntity::class,
+        CharacterEntity::class,
+        CharacterRelationshipEntity::class,
+        CharacterArcEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
 )
 abstract class OpenAuthorDatabase : RoomDatabase() {
@@ -26,6 +29,8 @@ abstract class OpenAuthorDatabase : RoomDatabase() {
     abstract fun agentRunDao(): AgentRunDao
 
     abstract fun worldbuildingDao(): WorldbuildingDao
+
+    abstract fun characterDao(): CharacterDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -167,6 +172,108 @@ abstract class OpenAuthorDatabase : RoomDatabase() {
                 )
                 database.execSQL(
                     "CREATE UNIQUE INDEX IF NOT EXISTS `index_world_entries_projectId_categoryId_title` ON `world_entries` (`projectId`, `categoryId`, `title`)",
+                )
+            }
+        }
+
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `characters` (
+                        `id` TEXT NOT NULL,
+                        `projectId` TEXT NOT NULL,
+                        `name` TEXT NOT NULL,
+                        `aliases` TEXT NOT NULL,
+                        `gender` TEXT NOT NULL,
+                        `age` TEXT NOT NULL,
+                        `identity` TEXT NOT NULL,
+                        `publicRumors` TEXT NOT NULL,
+                        `factionId` TEXT,
+                        `appearance` TEXT NOT NULL,
+                        `mentionAllowedFromChapter` INTEGER,
+                        `firstAppearanceChapter` INTEGER NOT NULL,
+                        `importance` TEXT NOT NULL,
+                        `currentStatus` TEXT NOT NULL,
+                        `thinkingStyle` TEXT NOT NULL,
+                        `speechStyle` TEXT NOT NULL,
+                        `behaviorHabits` TEXT NOT NULL,
+                        `decisionPattern` TEXT NOT NULL,
+                        `valuesAndLimits` TEXT NOT NULL,
+                        `relationshipHandling` TEXT NOT NULL,
+                        `informationHandling` TEXT NOT NULL,
+                        `background` TEXT NOT NULL,
+                        `currentGoal` TEXT NOT NULL,
+                        `longTermGoal` TEXT NOT NULL,
+                        `coreDesire` TEXT NOT NULL,
+                        `coreFear` TEXT NOT NULL,
+                        `secret` TEXT NOT NULL,
+                        `abilitiesAndResources` TEXT NOT NULL,
+                        `weaknesses` TEXT NOT NULL,
+                        `isArchived` INTEGER NOT NULL,
+                        `createdAt` INTEGER NOT NULL,
+                        `updatedAt` INTEGER NOT NULL,
+                        PRIMARY KEY(`id`)
+                    )
+                    """.trimIndent(),
+                )
+                database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_characters_projectId` ON `characters` (`projectId`)",
+                )
+                database.execSQL(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS `index_characters_projectId_name` ON `characters` (`projectId`, `name`)",
+                )
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `character_relationships` (
+                        `id` TEXT NOT NULL,
+                        `projectId` TEXT NOT NULL,
+                        `sourceCharacterId` TEXT NOT NULL,
+                        `targetCharacterId` TEXT NOT NULL,
+                        `type` TEXT NOT NULL,
+                        `summary` TEXT NOT NULL,
+                        `hiddenDetails` TEXT NOT NULL,
+                        `createdAt` INTEGER NOT NULL,
+                        `updatedAt` INTEGER NOT NULL,
+                        PRIMARY KEY(`id`)
+                    )
+                    """.trimIndent(),
+                )
+                database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_character_relationships_projectId` ON `character_relationships` (`projectId`)",
+                )
+                database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_character_relationships_sourceCharacterId` ON `character_relationships` (`sourceCharacterId`)",
+                )
+                database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_character_relationships_targetCharacterId` ON `character_relationships` (`targetCharacterId`)",
+                )
+                database.execSQL(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS `index_character_relationships_projectId_sourceCharacterId_targetCharacterId_type` ON `character_relationships` (`projectId`, `sourceCharacterId`, `targetCharacterId`, `type`)",
+                )
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `character_arcs` (
+                        `id` TEXT NOT NULL,
+                        `projectId` TEXT NOT NULL,
+                        `characterId` TEXT NOT NULL,
+                        `arcType` TEXT NOT NULL,
+                        `initialState` TEXT NOT NULL,
+                        `targetState` TEXT NOT NULL,
+                        `currentStage` TEXT NOT NULL,
+                        `turningPoints` TEXT NOT NULL,
+                        `notes` TEXT NOT NULL,
+                        `createdAt` INTEGER NOT NULL,
+                        `updatedAt` INTEGER NOT NULL,
+                        PRIMARY KEY(`id`)
+                    )
+                    """.trimIndent(),
+                )
+                database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_character_arcs_projectId` ON `character_arcs` (`projectId`)",
+                )
+                database.execSQL(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS `index_character_arcs_projectId_characterId` ON `character_arcs` (`projectId`, `characterId`)",
                 )
             }
         }

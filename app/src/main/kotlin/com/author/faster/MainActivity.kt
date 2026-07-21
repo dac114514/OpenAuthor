@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
                         modelConfigRepository = (application as OpenAuthorApplication).container.modelConfigRepository,
                         apiKeyStore = (application as OpenAuthorApplication).container.apiKeyStore,
                         worldbuildingRepository = (application as OpenAuthorApplication).container.worldbuildingRepository,
+                        characterRepository = (application as OpenAuthorApplication).container.characterRepository,
                         agentRunStore = (application as OpenAuthorApplication).container.agentRunStore,
                         pendingToolCallStore = (application as OpenAuthorApplication).container.pendingToolCallStore,
                     ),
@@ -49,6 +50,13 @@ class MainActivity : ComponentActivity() {
                     onDeleteWorldEntry = viewModel::deleteWorldEntry,
                     onRunWorldAgent = viewModel::runWorldAgent,
                     onResolveWorldTool = viewModel::resolveWorldTool,
+                    characterUiState = state.characters,
+                    onSaveCharacter = viewModel::saveCharacter,
+                    onArchiveCharacter = viewModel::archiveCharacter,
+                    onDeleteCharacter = viewModel::deleteCharacter,
+                    onSaveRelationship = viewModel::saveRelationship,
+                    onRunCharacterAgent = viewModel::runCharacterAgent,
+                    onResolveCharacterTool = viewModel::resolveCharacterTool,
                 )
             }
         }

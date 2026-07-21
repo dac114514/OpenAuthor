@@ -20,6 +20,7 @@ import com.author.faster.core.model.ProjectPhase
 import com.author.faster.core.model.WorldCategory
 import com.author.faster.core.model.WorldEntry
 import com.author.faster.core.repository.ModelConfigRepository
+import com.author.faster.core.repository.CharacterRepository
 import com.author.faster.core.repository.ProjectRepository
 import com.author.faster.core.repository.WorldbuildingRepository
 import com.author.faster.core.security.ApiKeyStore
@@ -27,6 +28,10 @@ import com.author.faster.core.validation.ModelConfigInput
 import com.author.faster.core.validation.ProjectInput
 import com.author.faster.core.validation.ProjectInputValidator
 import com.author.faster.features.ModelConfigCardState
+import com.author.faster.features.CharacterAgentMode
+import com.author.faster.features.CharacterDraft
+import com.author.faster.features.CharacterRelationshipDraft
+import com.author.faster.features.CharacterUiState
 import com.author.faster.features.ModelConfigsUiState
 import com.author.faster.features.PendingWorldToolCallState
 import com.author.faster.features.ProjectCardState
@@ -65,6 +70,7 @@ data class OpenAuthorUiState(
     val projectCreation: ProjectCreationUiState = ProjectCreationUiState(),
     val activeProject: ProjectCardState? = null,
     val worldbuilding: WorldbuildingUiState = WorldbuildingUiState(),
+    val characters: CharacterUiState = CharacterUiState(),
 )
 
 private data class WorldOperationState(
@@ -80,11 +86,22 @@ class OpenAuthorViewModel(
     private val modelConfigRepository: ModelConfigRepository,
     private val apiKeyStore: ApiKeyStore,
     private val worldbuildingRepository: WorldbuildingRepository,
+    characterRepository: CharacterRepository,
     private val agentRunStore: AgentRunStore,
     private val pendingToolCallStore: PendingToolCallStore,
 ) : ViewModel() {
     private val projectCreationState = MutableStateFlow(ProjectCreationUiState())
     private val activeProjectId = MutableStateFlow<String?>(null)
+    private val characterController = CharacterFeatureController(
+        scope = viewModelScope,
+        activeProjectId = activeProjectId,
+        projectRepository = projectRepository,
+        modelConfigRepository = modelConfigRepository,
+        apiKeyStore = apiKeyStore,
+        characterRepository = characterRepository,
+        agentRunStore = agentRunStore,
+        pendingToolCallStore = pendingToolCallStore,
+    )
     private val worldOperationState = MutableStateFlow(WorldOperationState())
     private val worldAgentMessages = mutableListOf<AgentMessage>()
     private var pendingAgentSession: AgentSession? = null
@@ -114,13 +131,18 @@ class OpenAuthorViewModel(
         )
     }
 
+    private val activeProjectAssets = combine(
+        activeWorldbuilding,
+        characterController.uiState,
+    ) { worldbuilding, characters -> worldbuilding to characters }
+
     val uiState: StateFlow<OpenAuthorUiState> = combine(
         projectRepository.observeProjects(),
         modelConfigRepository.observeModelConfigs(),
         projectCreationState,
         activeProjectId,
-        activeWorldbuilding,
-    ) { projects, configs, creation, selectedProjectId, worldbuilding ->
+        activeProjectAssets,
+    ) { projects, configs, creation, selectedProjectId, assets ->
         val configsById = configs.associateBy(ModelConfig::id)
         val projectCards = projects.map { project ->
             project.toCardState(project.modelConfigId?.let(configsById::get))
@@ -130,7 +152,8 @@ class OpenAuthorViewModel(
             modelConfigs = ModelConfigsUiState(configs.map(ModelConfig::toCardState)),
             projectCreation = creation,
             activeProject = projectCards.firstOrNull { it.id == selectedProjectId },
-            worldbuilding = worldbuilding,
+            worldbuilding = assets.first,
+            characters = assets.second,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -140,6 +163,7 @@ class OpenAuthorViewModel(
 
     fun openProject(id: String) {
         activeProjectId.value = id
+        characterController.reset()
         worldOperationState.value = WorldOperationState()
         clearPendingWorldAgent()
         worldAgentMessages.clear()
@@ -155,6 +179,7 @@ class OpenAuthorViewModel(
 
     fun closeProject() {
         activeProjectId.value = null
+        characterController.reset()
         worldOperationState.value = WorldOperationState()
         clearPendingWorldAgent()
         worldAgentMessages.clear()
@@ -308,6 +333,18 @@ class OpenAuthorViewModel(
             }
         }
     }
+
+    fun saveCharacter(draft: CharacterDraft) = characterController.saveCharacter(draft)
+
+    fun archiveCharacter(characterId: String) = characterController.archiveCharacter(characterId)
+
+    fun deleteCharacter(characterId: String) = characterController.deleteCharacter(characterId)
+
+    fun saveRelationship(draft: CharacterRelationshipDraft) = characterController.saveRelationship(draft)
+
+    fun runCharacterAgent(prompt: String, mode: CharacterAgentMode) = characterController.runAgent(prompt, mode)
+
+    fun resolveCharacterTool(approved: Boolean) = characterController.resolveTool(approved)
 
     fun onProjectCreationIntent(intent: ProjectCreationIntent) {
         when (intent) {
@@ -495,6 +532,7 @@ class OpenAuthorViewModel(
             modelConfigRepository: ModelConfigRepository,
             apiKeyStore: ApiKeyStore,
             worldbuildingRepository: WorldbuildingRepository,
+            characterRepository: CharacterRepository,
             agentRunStore: AgentRunStore,
             pendingToolCallStore: PendingToolCallStore,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
@@ -505,6 +543,7 @@ class OpenAuthorViewModel(
                     modelConfigRepository,
                     apiKeyStore,
                     worldbuildingRepository,
+                    characterRepository,
                     agentRunStore,
                     pendingToolCallStore,
                 ) as T

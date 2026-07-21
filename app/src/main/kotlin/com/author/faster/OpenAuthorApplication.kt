@@ -4,12 +4,14 @@ import android.app.Application
 import androidx.room.Room
 import com.author.faster.agent.runtime.AgentRunStore
 import com.author.faster.agent.runtime.PendingToolCallStore
+import com.author.faster.core.repository.CharacterRepository
 import com.author.faster.core.repository.ProjectRepository
 import com.author.faster.core.repository.ModelConfigRepository
 import com.author.faster.core.security.ApiKeyStore
 import com.author.faster.core.repository.WorldbuildingRepository
 import com.author.faster.data.local.OpenAuthorDatabase
 import com.author.faster.data.repository.RoomModelConfigRepository
+import com.author.faster.data.repository.RoomCharacterRepository
 import com.author.faster.data.repository.RoomProjectRepository
 import com.author.faster.data.repository.RoomWorldbuildingRepository
 import com.author.faster.data.security.KeystoreApiKeyStore
@@ -30,6 +32,7 @@ class OpenAuthorApplication : Application() {
                 OpenAuthorDatabase.MIGRATION_1_2,
                 OpenAuthorDatabase.MIGRATION_2_3,
                 OpenAuthorDatabase.MIGRATION_3_4,
+                OpenAuthorDatabase.MIGRATION_4_5,
             )
             .build()
         val agentRuntimeStore = RoomAgentRuntimeStore(database.agentRunDao())
@@ -40,6 +43,7 @@ class OpenAuthorApplication : Application() {
             agentRunStore = agentRuntimeStore,
             pendingToolCallStore = agentRuntimeStore,
             worldbuildingRepository = RoomWorldbuildingRepository(database.worldbuildingDao()),
+            characterRepository = RoomCharacterRepository(database.characterDao()),
         )
     }
 }
@@ -51,4 +55,5 @@ data class AppContainer(
     val agentRunStore: AgentRunStore,
     val pendingToolCallStore: PendingToolCallStore,
     val worldbuildingRepository: WorldbuildingRepository,
+    val characterRepository: CharacterRepository,
 )

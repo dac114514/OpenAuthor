@@ -110,6 +110,13 @@ fun OpenAuthorShell(
     onDeleteWorldEntry: (String) -> Unit = {},
     onRunWorldAgent: (String, WorldAgentMode) -> Unit = { _, _ -> },
     onResolveWorldTool: (Boolean) -> Unit = {},
+    characterUiState: CharacterUiState = CharacterUiState(),
+    onSaveCharacter: (CharacterDraft) -> Unit = {},
+    onArchiveCharacter: (String) -> Unit = {},
+    onDeleteCharacter: (String) -> Unit = {},
+    onSaveRelationship: (CharacterRelationshipDraft) -> Unit = {},
+    onRunCharacterAgent: (String, CharacterAgentMode) -> Unit = { _, _ -> },
+    onResolveCharacterTool: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     AnimatedContent(
@@ -135,6 +142,13 @@ fun OpenAuthorShell(
                 onDeleteWorldEntry = onDeleteWorldEntry,
                 onRunWorldAgent = onRunWorldAgent,
                 onResolveWorldTool = onResolveWorldTool,
+                characterUiState = characterUiState,
+                onSaveCharacter = onSaveCharacter,
+                onArchiveCharacter = onArchiveCharacter,
+                onDeleteCharacter = onDeleteCharacter,
+                onSaveRelationship = onSaveRelationship,
+                onRunCharacterAgent = onRunCharacterAgent,
+                onResolveCharacterTool = onResolveCharacterTool,
             )
         }
     }
@@ -249,6 +263,13 @@ private fun ProjectLevelShell(
     onDeleteWorldEntry: (String) -> Unit,
     onRunWorldAgent: (String, WorldAgentMode) -> Unit,
     onResolveWorldTool: (Boolean) -> Unit,
+    characterUiState: CharacterUiState,
+    onSaveCharacter: (CharacterDraft) -> Unit,
+    onArchiveCharacter: (String) -> Unit,
+    onDeleteCharacter: (String) -> Unit,
+    onSaveRelationship: (CharacterRelationshipDraft) -> Unit,
+    onRunCharacterAgent: (String, CharacterAgentMode) -> Unit,
+    onResolveCharacterTool: (Boolean) -> Unit,
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -310,13 +331,20 @@ private fun ProjectLevelShell(
                 )
             }
             composable(ProjectDestination.SETTING.route) {
-                WorldbuildingScreen(
-                    state = worldbuildingUiState,
-                    onCreateCategory = onCreateWorldCategory,
-                    onSaveEntry = onSaveWorldEntry,
-                    onDeleteEntry = onDeleteWorldEntry,
-                    onRunAgent = onRunWorldAgent,
-                    onResolvePendingTool = onResolveWorldTool,
+                ProjectSettingsScreen(
+                    worldbuildingUiState = worldbuildingUiState,
+                    characterUiState = characterUiState,
+                    onCreateWorldCategory = onCreateWorldCategory,
+                    onSaveWorldEntry = onSaveWorldEntry,
+                    onDeleteWorldEntry = onDeleteWorldEntry,
+                    onRunWorldAgent = onRunWorldAgent,
+                    onResolveWorldTool = onResolveWorldTool,
+                    onSaveCharacter = onSaveCharacter,
+                    onArchiveCharacter = onArchiveCharacter,
+                    onDeleteCharacter = onDeleteCharacter,
+                    onSaveRelationship = onSaveRelationship,
+                    onRunCharacterAgent = onRunCharacterAgent,
+                    onResolveCharacterTool = onResolveCharacterTool,
                 )
             }
             composable(ProjectDestination.OUTLINE.route) {
