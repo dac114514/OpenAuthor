@@ -4,7 +4,7 @@
 
     <application
         android:name=".OpenAuthorApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:label="OpenAuthor"
         android:supportsRtl="true"
         android:theme="@style/Theme.OpenAuthor">
@@ -18,4 +18,3 @@
         </activity>
     </application>
 </manifest>
-
