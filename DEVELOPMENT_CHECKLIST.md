@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-- 当前阶段：M0 / Task 3「Agent Runtime」
+- 当前阶段：M0 / Task 3「Agent Runtime」已完成；下一阶段为 Task 4「世界观」
 - 当前分支：`codex/task3-agent-runtime`
 - 构建策略：仅通过 GitHub Actions 执行单元测试、Lint 和 APK 构建
 - 上一阶段：Task 2 已完成，等待 PR 合入
@@ -33,7 +33,7 @@
 - [x] Compose Preview / Fake State
 - [x] Room 1 → 2 Migration
 
-## Task 3：Agent Runtime（进行中）
+## Task 3：Agent Runtime（已完成）
 
 - [x] ModelProvider 接口
 - [x] AgentSession、ToolDefinition、ToolExecutor 基础模型
@@ -56,7 +56,7 @@
 - [x] Manual 模式只自动执行 READ，写操作暂停等待确认
 - [x] 工具结果正确回传模型，循环不会在第一步停止
 - [x] 非法工具、非法参数、超限、超时、取消和执行失败均留下明确状态
-- [ ] GitHub Actions 全部通过
+- [x] GitHub Actions 全部通过
 
 ## Task 4：世界观（待开发）
 
