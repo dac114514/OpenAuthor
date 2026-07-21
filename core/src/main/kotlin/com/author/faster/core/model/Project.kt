@@ -26,3 +26,25 @@ enum class ProjectPhase {
     COMPLETED,
 }
 
+data class ModelConfig(
+    val id: String,
+    val name: String,
+    val protocol: ModelProtocol,
+    val baseUrl: String,
+    val modelId: String,
+    val maxContextTokens: Int,
+    val maxOutputTokens: Int,
+    val temperature: Double,
+    val supportsToolCalling: Boolean,
+    val supportsStreamingToolCalling: Boolean,
+    val extraHeadersJson: String,
+    val hasApiKey: Boolean,
+    val createdAt: Long,
+    val updatedAt: Long,
+)
+
+enum class ModelProtocol(val displayName: String, val defaultBaseUrl: String) {
+    OPENAI_COMPATIBLE("OpenAI Compatible", "https://api.openai.com/v1"),
+    GEMINI_NATIVE("Gemini Native", "https://generativelanguage.googleapis.com"),
+    ANTHROPIC_NATIVE("Anthropic Native", "https://api.anthropic.com"),
+}
