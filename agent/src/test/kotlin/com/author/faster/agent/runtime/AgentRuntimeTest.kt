@@ -141,6 +141,7 @@ class AgentRuntimeTest {
         val readDefinition = writeDefinition.copy(
             name = readCall.name,
             riskLevel = ToolRiskLevel.READ,
+            retryable = true,
         )
         var modelCalls = 0
         var toolCalls = 0
