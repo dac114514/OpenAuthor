@@ -4,10 +4,10 @@
 
 ## 当前状态
 
-- 当前阶段：M0 / Task 4「世界观」（进行中）
+- 当前阶段：M0 / Task 4「世界观」（已完成）
 - 当前分支：`codex/task4-worldbuilding`
 - 构建策略：仅通过 GitHub Actions 执行单元测试、Lint 和 APK 构建
-- 上一阶段：Task 3 已完成，等待 PR 合入
+- 下一阶段：Task 5「人物」
 
 ## Task 1：初始化工程（已完成）
 
@@ -58,7 +58,7 @@
 - [x] 非法工具、非法参数、超限、超时、取消和执行失败均留下明确状态
 - [x] GitHub Actions 全部通过
 
-## Task 4：世界观（进行中）
+## Task 4：世界观（已完成）
 
 - [x] WorldCategoryEntity / WorldEntryEntity 与 Room 3 → 4 Migration
 - [x] 七个内置分类与自定义分类初始化
@@ -66,7 +66,7 @@
 - [x] 世界观读取、创建、更新、删除工具及 Schema
 - [x] 世界观 Agent 对话、Manual / Solo 与写操作确认
 - [x] 页面 Preview / Fake State 与单元测试
-- [ ] GitHub Actions 全部通过
+- [x] GitHub Actions 全部通过
 
 ## Task 5：人物（待开发）
 
