@@ -24,6 +24,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.langchain4j.core)
     implementation(libs.langchain4j.openai)
+    implementation(libs.langchain4j.http.okhttp)
     testImplementation(libs.junit)
 }
-
