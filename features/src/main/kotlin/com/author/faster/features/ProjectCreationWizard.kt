@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -68,6 +69,7 @@ sealed interface ProjectCreationIntent {
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun ProjectCreationWizard(
     state: ProjectCreationUiState,
     onIntent: (ProjectCreationIntent) -> Unit,
@@ -253,4 +255,3 @@ private fun ProjectCreationWizardPreview() {
         )
     }
 }
-

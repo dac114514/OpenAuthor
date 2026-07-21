@@ -20,6 +20,9 @@ import com.author.faster.features.ProjectCreationIntent
 import com.author.faster.features.ProjectCreationUiState
 import com.author.faster.features.ProjectsUiState
 import java.util.UUID
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,6 +38,7 @@ data class OpenAuthorUiState(
     val projects: ProjectsUiState = ProjectsUiState(),
     val modelConfigs: ModelConfigsUiState = ModelConfigsUiState(),
     val projectCreation: ProjectCreationUiState = ProjectCreationUiState(),
+    val activeProject: ProjectCardState? = null,
 )
 
 class OpenAuthorViewModel(
@@ -43,27 +47,37 @@ class OpenAuthorViewModel(
     private val apiKeyStore: ApiKeyStore,
 ) : ViewModel() {
     private val projectCreationState = MutableStateFlow(ProjectCreationUiState())
+    private val activeProjectId = MutableStateFlow<String?>(null)
 
     val uiState: StateFlow<OpenAuthorUiState> = combine(
         projectRepository.observeProjects(),
         modelConfigRepository.observeModelConfigs(),
         projectCreationState,
-    ) { projects, configs, creation ->
+        activeProjectId,
+    ) { projects, configs, creation, selectedProjectId ->
         val configsById = configs.associateBy(ModelConfig::id)
+        val projectCards = projects.map { project ->
+            project.toCardState(project.modelConfigId?.let(configsById::get))
+        }
         OpenAuthorUiState(
-            projects = ProjectsUiState(
-                projects.map { project ->
-                    project.toCardState(project.modelConfigId?.let(configsById::get)?.name)
-                },
-            ),
+            projects = ProjectsUiState(projectCards),
             modelConfigs = ModelConfigsUiState(configs.map(ModelConfig::toCardState)),
             projectCreation = creation,
+            activeProject = projectCards.firstOrNull { it.id == selectedProjectId },
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = OpenAuthorUiState(),
     )
+
+    fun openProject(id: String) {
+        activeProjectId.value = id
+    }
+
+    fun closeProject() {
+        activeProjectId.value = null
+    }
 
     fun onProjectCreationIntent(intent: ProjectCreationIntent) {
         when (intent) {
@@ -212,7 +226,7 @@ private fun ProjectCreationDraft.toProject(id: String, configId: String, now: Lo
     updatedAt = now,
 )
 
-private fun Project.toCardState(modelName: String?): ProjectCardState = ProjectCardState(
+private fun Project.toCardState(modelConfig: ModelConfig?): ProjectCardState = ProjectCardState(
     id = id,
     title = title,
     author = author,
@@ -225,8 +239,12 @@ private fun Project.toCardState(modelName: String?): ProjectCardState = ProjectC
         ProjectPhase.WRITING -> "创作中"
         ProjectPhase.COMPLETED -> "已完成"
     },
-    model = modelName ?: "模型配置缺失",
+    model = modelConfig?.let { "${it.protocol.displayName} · ${it.modelId}" } ?: "模型配置缺失",
     generationState = "空闲",
+    lastUpdated = DateTimeFormatter.ofPattern("MM-dd HH:mm")
+        .withZone(ZoneId.systemDefault())
+        .format(Instant.ofEpochMilli(updatedAt)),
+    consistencyState = if (lastSequentialCompletedChapter == 0) "未初始化" else "正常",
 )
 
 private fun ModelConfig.toCardState() = ModelConfigCardState(

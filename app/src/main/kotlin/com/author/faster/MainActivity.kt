@@ -36,6 +36,9 @@ class MainActivity : ComponentActivity() {
                     projectsUiState = state.projects,
                     modelConfigsUiState = state.modelConfigs,
                     projectCreationUiState = state.projectCreation,
+                    activeProject = state.activeProject,
+                    onOpenProject = viewModel::openProject,
+                    onCloseProject = viewModel::closeProject,
                     onProjectCreationIntent = viewModel::onProjectCreationIntent,
                 )
             }
