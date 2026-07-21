@@ -26,13 +26,17 @@ class MainActivity : ComponentActivity() {
             OpenAuthorTheme {
                 val viewModel: OpenAuthorViewModel = viewModel(
                     factory = OpenAuthorViewModel.factory(
-                        (application as OpenAuthorApplication).container.projectRepository,
+                        projectRepository = (application as OpenAuthorApplication).container.projectRepository,
+                        modelConfigRepository = (application as OpenAuthorApplication).container.modelConfigRepository,
+                        apiKeyStore = (application as OpenAuthorApplication).container.apiKeyStore,
                     ),
                 )
                 val state by viewModel.uiState.collectAsStateWithLifecycle()
                 OpenAuthorShell(
                     projectsUiState = state.projects,
-                    onCreateProject = viewModel::startProjectCreation,
+                    modelConfigsUiState = state.modelConfigs,
+                    projectCreationUiState = state.projectCreation,
+                    onProjectCreationIntent = viewModel::onProjectCreationIntent,
                 )
             }
         }

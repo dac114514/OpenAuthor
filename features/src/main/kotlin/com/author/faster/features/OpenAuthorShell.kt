@@ -73,7 +73,9 @@ data class ProjectsUiState(
 @Composable
 fun OpenAuthorShell(
     projectsUiState: ProjectsUiState,
-    onCreateProject: () -> Unit,
+    modelConfigsUiState: ModelConfigsUiState,
+    projectCreationUiState: ProjectCreationUiState,
+    onProjectCreationIntent: (ProjectCreationIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
@@ -108,13 +110,23 @@ fun OpenAuthorShell(
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(MainDestination.OVERVIEW.route) {
-                ProjectHomeScreen(projectsUiState, onCreateProject)
+                ProjectHomeScreen(
+                    state = projectsUiState,
+                    onCreateProject = { onProjectCreationIntent(ProjectCreationIntent.Open) },
+                )
             }
-            composable(MainDestination.SETTING.route) { PlaceholderScreen("设定", "世界观与人物将在这里由 AI 协作维护") }
+            composable(MainDestination.SETTING.route) { ModelConfigScreen(modelConfigsUiState) }
             composable(MainDestination.OUTLINE.route) { PlaceholderScreen("大纲", "故事骨架、分卷和章节细纲") }
             composable(MainDestination.CHAPTER.route) { PlaceholderScreen("章节", "生成、审阅和接受章节正文") }
             composable(MainDestination.AI.route) { PlaceholderScreen("AI", "Manual / Solo 项目对话") }
         }
+    }
+
+    if (projectCreationUiState.isOpen) {
+        ProjectCreationWizard(
+            state = projectCreationUiState,
+            onIntent = onProjectCreationIntent,
+        )
     }
 }
 
@@ -257,4 +269,3 @@ private fun ProjectHomePreview() {
         )
     }
 }
-
