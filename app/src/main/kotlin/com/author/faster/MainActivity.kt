@@ -29,6 +29,9 @@ class MainActivity : ComponentActivity() {
                         projectRepository = (application as OpenAuthorApplication).container.projectRepository,
                         modelConfigRepository = (application as OpenAuthorApplication).container.modelConfigRepository,
                         apiKeyStore = (application as OpenAuthorApplication).container.apiKeyStore,
+                        worldbuildingRepository = (application as OpenAuthorApplication).container.worldbuildingRepository,
+                        agentRunStore = (application as OpenAuthorApplication).container.agentRunStore,
+                        pendingToolCallStore = (application as OpenAuthorApplication).container.pendingToolCallStore,
                     ),
                 )
                 val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -40,6 +43,12 @@ class MainActivity : ComponentActivity() {
                     onOpenProject = viewModel::openProject,
                     onCloseProject = viewModel::closeProject,
                     onProjectCreationIntent = viewModel::onProjectCreationIntent,
+                    worldbuildingUiState = state.worldbuilding,
+                    onCreateWorldCategory = viewModel::createWorldCategory,
+                    onSaveWorldEntry = viewModel::saveWorldEntry,
+                    onDeleteWorldEntry = viewModel::deleteWorldEntry,
+                    onRunWorldAgent = viewModel::runWorldAgent,
+                    onResolveWorldTool = viewModel::resolveWorldTool,
                 )
             }
         }

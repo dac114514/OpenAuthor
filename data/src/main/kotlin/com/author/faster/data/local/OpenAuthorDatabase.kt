@@ -12,8 +12,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         AgentRunEntity::class,
         AgentToolCallEntity::class,
         PendingToolCallEntity::class,
+        WorldCategoryEntity::class,
+        WorldEntryEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = true,
 )
 abstract class OpenAuthorDatabase : RoomDatabase() {
@@ -22,6 +24,8 @@ abstract class OpenAuthorDatabase : RoomDatabase() {
     abstract fun modelConfigDao(): ModelConfigDao
 
     abstract fun agentRunDao(): AgentRunDao
+
+    abstract fun worldbuildingDao(): WorldbuildingDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -111,6 +115,58 @@ abstract class OpenAuthorDatabase : RoomDatabase() {
                 )
                 database.execSQL(
                     "CREATE INDEX IF NOT EXISTS `index_pending_tool_calls_agentRunId` ON `pending_tool_calls` (`agentRunId`)",
+                )
+            }
+        }
+
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `world_categories` (
+                        `id` TEXT NOT NULL,
+                        `projectId` TEXT NOT NULL,
+                        `name` TEXT NOT NULL,
+                        `description` TEXT NOT NULL,
+                        `fieldSchemaJson` TEXT NOT NULL,
+                        `isBuiltIn` INTEGER NOT NULL,
+                        `sortOrder` INTEGER NOT NULL,
+                        `createdAt` INTEGER NOT NULL,
+                        `updatedAt` INTEGER NOT NULL,
+                        PRIMARY KEY(`id`)
+                    )
+                    """.trimIndent(),
+                )
+                database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_world_categories_projectId` ON `world_categories` (`projectId`)",
+                )
+                database.execSQL(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS `index_world_categories_projectId_name` ON `world_categories` (`projectId`, `name`)",
+                )
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `world_entries` (
+                        `id` TEXT NOT NULL,
+                        `projectId` TEXT NOT NULL,
+                        `categoryId` TEXT NOT NULL,
+                        `title` TEXT NOT NULL,
+                        `summary` TEXT NOT NULL,
+                        `content` TEXT NOT NULL,
+                        `structuredFieldsJson` TEXT NOT NULL,
+                        `createdAt` INTEGER NOT NULL,
+                        `updatedAt` INTEGER NOT NULL,
+                        PRIMARY KEY(`id`)
+                    )
+                    """.trimIndent(),
+                )
+                database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_world_entries_projectId` ON `world_entries` (`projectId`)",
+                )
+                database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_world_entries_categoryId` ON `world_entries` (`categoryId`)",
+                )
+                database.execSQL(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS `index_world_entries_projectId_categoryId_title` ON `world_entries` (`projectId`, `categoryId`, `title`)",
                 )
             }
         }

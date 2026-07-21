@@ -104,6 +104,12 @@ fun OpenAuthorShell(
     onOpenProject: (String) -> Unit,
     onCloseProject: () -> Unit,
     onProjectCreationIntent: (ProjectCreationIntent) -> Unit,
+    worldbuildingUiState: WorldbuildingUiState = WorldbuildingUiState(),
+    onCreateWorldCategory: (WorldCategoryDraft) -> Unit = {},
+    onSaveWorldEntry: (WorldEntryDraft) -> Unit = {},
+    onDeleteWorldEntry: (String) -> Unit = {},
+    onRunWorldAgent: (String, WorldAgentMode) -> Unit = { _, _ -> },
+    onResolveWorldTool: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     AnimatedContent(
@@ -123,6 +129,12 @@ fun OpenAuthorShell(
             ProjectLevelShell(
                 project = project,
                 onCloseProject = onCloseProject,
+                worldbuildingUiState = worldbuildingUiState,
+                onCreateWorldCategory = onCreateWorldCategory,
+                onSaveWorldEntry = onSaveWorldEntry,
+                onDeleteWorldEntry = onDeleteWorldEntry,
+                onRunWorldAgent = onRunWorldAgent,
+                onResolveWorldTool = onResolveWorldTool,
             )
         }
     }
@@ -231,6 +243,12 @@ private fun AppLevelShell(
 private fun ProjectLevelShell(
     project: ProjectCardState,
     onCloseProject: () -> Unit,
+    worldbuildingUiState: WorldbuildingUiState,
+    onCreateWorldCategory: (WorldCategoryDraft) -> Unit,
+    onSaveWorldEntry: (WorldEntryDraft) -> Unit,
+    onDeleteWorldEntry: (String) -> Unit,
+    onRunWorldAgent: (String, WorldAgentMode) -> Unit,
+    onResolveWorldTool: (Boolean) -> Unit,
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -292,7 +310,14 @@ private fun ProjectLevelShell(
                 )
             }
             composable(ProjectDestination.SETTING.route) {
-                ProjectPlaceholderScreen("设定", "世界观、人物、人物关系、文风、故事骨架与一致性资产")
+                WorldbuildingScreen(
+                    state = worldbuildingUiState,
+                    onCreateCategory = onCreateWorldCategory,
+                    onSaveEntry = onSaveWorldEntry,
+                    onDeleteEntry = onDeleteWorldEntry,
+                    onRunAgent = onRunWorldAgent,
+                    onResolvePendingTool = onResolveWorldTool,
+                )
             }
             composable(ProjectDestination.OUTLINE.route) {
                 ProjectPlaceholderScreen("大纲", "手动创建分卷，并由 AI 协作填写分卷与章节细纲")
