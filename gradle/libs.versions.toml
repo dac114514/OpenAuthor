@@ -34,6 +34,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 langchain4j-core = { module = "dev.langchain4j:langchain4j", version.ref = "langchain4j" }
 langchain4j-openai = { module = "dev.langchain4j:langchain4j-open-ai", version.ref = "langchain4j" }
+langchain4j-http-okhttp = { module = "dev.langchain4j:langchain4j-http-client-okhttp", version.ref = "langchain4j" }
 junit = { module = "junit:junit", version.ref = "junit" }
 
 [plugins]
