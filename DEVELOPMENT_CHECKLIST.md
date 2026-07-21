@@ -4,10 +4,10 @@
 
 ## 当前状态
 
-- 当前阶段：M0 / Task 5「人物」（进行中）
+- 当前阶段：M0 / Task 5「人物」（已完成）
 - 当前分支：`codex/task5-characters`
 - 构建策略：仅通过 GitHub Actions 执行单元测试、Lint 和 APK 构建
-- 上一阶段：Task 4 已完成，等待 PR 合入
+- 下一阶段：Task 6「故事骨架与分卷」
 
 ## Task 1：初始化工程（已完成）
 
@@ -68,7 +68,7 @@
 - [x] 页面 Preview / Fake State 与单元测试
 - [x] GitHub Actions 全部通过
 
-## Task 5：人物（进行中）
+## Task 5：人物（已完成）
 
 - [x] CharacterEntity / CharacterRelationshipEntity / CharacterArcEntity
 - [x] Room 4 → 5 Migration
@@ -77,7 +77,7 @@
 - [x] HIDDEN / MENTION_ONLY / FULL 首次出场过滤
 - [x] Character Agent 对话、Manual / Solo 与写操作确认
 - [x] 页面 Preview / Fake State 与单元测试
-- [ ] GitHub Actions 全部通过
+- [x] GitHub Actions 全部通过
 
 ## Task 6：故事骨架与分卷（待开发）
 
