@@ -12,6 +12,7 @@ datastore = "1.2.1"
 coroutines = "1.10.2"
 serialization = "1.9.0"
 langchain4j = "1.18.0"
+langchain4jIntegration = "1.18.0-beta28"
 junit = "4.13.2"
 
 [libraries]
@@ -34,7 +35,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 langchain4j-core = { module = "dev.langchain4j:langchain4j", version.ref = "langchain4j" }
 langchain4j-openai = { module = "dev.langchain4j:langchain4j-open-ai", version.ref = "langchain4j" }
-langchain4j-http-okhttp = { module = "dev.langchain4j:langchain4j-http-client-okhttp", version.ref = "langchain4j" }
+langchain4j-http-okhttp = { module = "dev.langchain4j:langchain4j-http-client-okhttp", version.ref = "langchain4jIntegration" }
 junit = { module = "junit:junit", version.ref = "junit" }
 
 [plugins]
